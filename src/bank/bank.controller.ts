@@ -1,8 +1,10 @@
-import { Controller, Get, Header, Param, Res, StreamableFile } from '@nestjs/common';
+import { Controller, Get, Header, Param, Query, Res, StreamableFile } from '@nestjs/common';
 import { BankService } from './bank.service';
 import { Repository } from 'src/repository';
 import { createReadStream } from 'fs';
 import { join } from 'path';
+import { IBank } from './interfaces/bank.interface';
+
 
 @Controller('bank')
 export class BankController {
@@ -11,7 +13,7 @@ export class BankController {
         private readonly repository: Repository
     ) { }
 
-    @Get('')
+    @Get()
     async getBankAll() {
         const bancosJSON = await this.bankService.local();
         return {
@@ -19,6 +21,16 @@ export class BankController {
             json:bancosJSON,
         };
     }
+
+    
+    @Get()
+    async getUsers(@Query() params: any): Promise<IBank[]> {
+        console.log(params);
+        const bancosJSON = await this.bankService.local();
+        const json = this.repository.findUsersByName(bancosJSON, params);
+        return json;
+    }
+
     @Get(':id')
     async getBankDetails(@Param('id') id: string) {
         const bankId = String(Number(id)).padStart(3, '0');
@@ -29,6 +41,7 @@ export class BankController {
             json,
         };
     }
+
     @Get(':id/icon')
     @Header('Content-Type', 'image/*')
     getBankIcon(@Param('id') id: string, @Res({ passthrough: true }) res): StreamableFile {
