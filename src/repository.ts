@@ -55,9 +55,31 @@ export class UserRepository {
     return null;
   }
 
-  public async createUser(user: CreateUserDto): Promise<any> {
-    const newUserRef = await this._collectionRef.add(user);
-    return newUserRef.id;
+  public async createUser(user: CreateUserDto): Promise<string> {
+    const userRecord = await firebase.auth().createUser({
+      email: user.email,
+      displayName: user.name,
+      password: user.password,
+      photoURL: user.url_perfil
+    });
+    try {
+      const userCreated: IUser = {
+        id: userRecord.uid,
+        email: userRecord.email,
+        name: userRecord.displayName,
+        password: userRecord.passwordHash ?? null,
+        url_perfil: userRecord.photoURL ?? null
+      };
+      console.log("userCreated:IUser ->",userCreated);
+
+      await this._collectionRef.doc(userRecord.uid).set(userCreated);
+
+      return userRecord.uid;
+    }
+    catch (error) {
+      await firebase.auth().deleteUser(userRecord.uid);
+      throw error;
+    }
   }
 
   public async updateUser(userId: string, updatedUser: UpdateUserDto): Promise<void> {

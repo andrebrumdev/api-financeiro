@@ -1,8 +1,9 @@
 import { UUID } from "crypto";
 
 export class IUser {
-    id: UUID;
+    id: string;
     name: string;
+    email: string;
     url_perfil: string;
     password: string;
 }
