@@ -7,8 +7,6 @@ import { BankService } from './bank/bank.service';
 import { BankController } from './bank/bank.controller';
 import { Repository } from './repository';
 import { UserModule } from './user/user.module';
-import { UserModule } from './user/user.module';
-import { UserModule } from './user/user.module';
 
 @Module({
   imports: [UserModule],

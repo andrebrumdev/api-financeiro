@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import * as firebase from 'firebase-admin';
 import { IUser } from "./user/entities/user.entity";
+import { CreateUserDto } from "./user/dto/create-user.dto";
+import { UpdateUserDto } from "./user/dto/update-user.dto";
 
 @Injectable()
 export class Repository<T> {
@@ -45,20 +47,20 @@ export class Repository<T> {
 export class UserRepository {
   private _collectionRef: FirebaseFirestore.CollectionReference = firebase.firestore().collection('users');
 
-  public async getUser(userId: string): Promise<any> {
+  public async getUser(userId: string): Promise<IUser | null> {
     const userSnapshot = await this._collectionRef.doc(userId).get();
     if (userSnapshot.exists) {
-      return userSnapshot.data();
+      return userSnapshot.data() as IUser;
     }
     return null;
   }
 
-  public async createUser(user: IUser): Promise<any> {
+  public async createUser(user: CreateUserDto): Promise<any> {
     const newUserRef = await this._collectionRef.add(user);
     return newUserRef.id;
   }
 
-  public async updateUser(userId: string, updatedUser: IUser): Promise<void> {
+  public async updateUser(userId: string, updatedUser: UpdateUserDto): Promise<void> {
     await this._collectionRef.doc(userId).set(updatedUser, { merge: true });
   }
 
