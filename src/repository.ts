@@ -89,4 +89,17 @@ export class UserRepository {
   public async deleteUser(userId: string): Promise<void> {
     await this._collectionRef.doc(userId).delete();
   }
+
+  public async sessionLogin(idToken: string, expiresIn:number) {
+    try {
+      const sessionCookie = await firebase.auth().createSessionCookie(idToken,{expiresIn});
+      
+      // Verificar o cookie de sessão
+      return sessionCookie;
+    } catch (error) {
+      // Lide com o erro de autenticação
+      throw error;
+    }
+  }
+
 }

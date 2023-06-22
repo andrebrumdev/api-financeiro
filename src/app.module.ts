@@ -7,9 +7,10 @@ import { BankService } from './bank/bank.service';
 import { BankController } from './bank/bank.controller';
 import { Repository } from './repository';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [UserModule],
+  imports: [UserModule, AuthModule],
   controllers: [AppController, TransacoesController, BankController],
   providers: [AppService, TransacoesService, BankService, Repository],
 })
