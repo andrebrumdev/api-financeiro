@@ -11,9 +11,11 @@ export class Repository<T> {
 
   getAll(bancosJSON: T[], nameToBeMatched: object): T[] {
     if (nameToBeMatched && Object.keys(nameToBeMatched).length) {
-      const [key, name] = Object.entries(nameToBeMatched)[0];
+      const filters = Object.entries(nameToBeMatched);
       return bancosJSON.filter((banco) =>
-        this.compareStrings(String(banco[key as keyof T]), name),
+        filters.some(([key, value]) =>
+          this.compareStrings(String(banco[key as keyof T]), value)
+        )
       )
     }
     else {

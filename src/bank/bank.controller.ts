@@ -1,4 +1,4 @@
-import { Controller, Get, Header, Param, Query, Res, StreamableFile } from '@nestjs/common';
+import { Controller, Get, Header, Param, ParseIntPipe, Query, Res, StreamableFile } from '@nestjs/common';
 import { BankService } from './bank.service';
 import { createReadStream } from 'fs';
 import { join } from 'path';
@@ -18,18 +18,19 @@ export class BankController {
 
     
     @Get(':id')
-    async getBankDetails(@Param('id') id: string,@Res() response) {
-        const bankId = String(Number(id)).padStart(3, '0');
+    async getBankDetails(@Param('id', ParseIntPipe) id: number,@Res() response) {
+        const bankId = String(id).padStart(3, '0');
         const json = await this.bankService.getById(bankId);
         response.status(200).send(json)
     }
 
     @Get(':id/icon')
     @Header('Content-Type', 'image/*')
-    getBankIcon(@Param('id') id: string, @Res({ passthrough: true }) res): StreamableFile {
-        const bankId = String(Number(id)).padStart(3, '0');
+    getBankIcon(@Param('id', ParseIntPipe) id: number, @Res({ passthrough: true }) res): StreamableFile {
+        const bankId = String(id).padStart(3, '0');
         const imagePath = `/src/database/img/${bankId}.jpg`;
-        const file = createReadStream(join(process.cwd(), imagePath));
+        const pathToImage = join(process.cwd(), imagePath);
+        const file = createReadStream(pathToImage);
         res.set({
             'Content-Disposition': `attachment; filename="${bankId}.jpg"`,
         });
