@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
-import { IBank } from 'src/dto/bank.interface';
 import { Repository } from 'src/repository';
+import { IBank } from './entities/bank.interface';
 
 @Injectable()
 export class BankService {
