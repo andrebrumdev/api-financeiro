@@ -1,45 +1,27 @@
 import { Controller, Get, Header, Param, Query, Res, StreamableFile } from '@nestjs/common';
 import { BankService } from './bank.service';
-import { Repository } from 'src/repository';
 import { createReadStream } from 'fs';
 import { join } from 'path';
-import { IBank } from './interfaces/bank.interface';
 
 
 @Controller('bank')
 export class BankController {
     constructor(
-        private readonly bankService: BankService,
-        private readonly repository: Repository
+        private readonly bankService: BankService
     ) { }
 
     @Get()
-    async getBankAll() {
-        const bancosJSON = await this.bankService.local();
-        return {
-            status: 200,
-            json:bancosJSON,
-        };
+    async getBankAll(@Query() params: any,@Res() response) {
+        const json = await this.bankService.getAll(params);
+        response.status(200).send(json)
     }
 
     
-    @Get()
-    async getUsers(@Query() params: any): Promise<IBank[]> {
-        console.log(params);
-        const bancosJSON = await this.bankService.local();
-        const json = this.repository.findUsersByName(bancosJSON, params);
-        return json;
-    }
-
     @Get(':id')
-    async getBankDetails(@Param('id') id: string) {
+    async getBankDetails(@Param('id') id: string,@Res() response) {
         const bankId = String(Number(id)).padStart(3, '0');
-        const bancosJSON = await this.bankService.local();
-        const json = await this.repository.findById(bancosJSON, bankId);
-        return {
-            status: 200,
-            json,
-        };
+        const json = await this.bankService.getById(bankId);
+        response.status(200).send(json)
     }
 
     @Get(':id/icon')

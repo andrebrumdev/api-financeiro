@@ -1,21 +1,38 @@
 import { Injectable } from "@nestjs/common";
-import { IBank } from "./bank/interfaces/bank.interface";
 
 @Injectable()
-export class Repository {
-  constructor() {}
+export class Repository<T> {
+  constructor() { }
 
-  findById(bancosJSON: any[],bankId: string) {
-    const requiredRecord = bancosJSON.find(record => Number(record.id) === Number(bankId));
+  getById(bancosJSON: T[], bankId: string) {
+    const requiredRecord = bancosJSON.find(record => Number(record["id" as keyof T]) === Number(bankId));
     return requiredRecord;
   }
 
-  findUsersByName(bancosJSON: any[],nameToBeMatched: string): IBank[] {
-    return nameToBeMatched
-      ? bancosJSON.filter((banco) =>
-          banco.name.toLowerCase().includes(nameToBeMatched),
-        )
-      : bancosJSON;
+  getAll(bancosJSON: T[], nameToBeMatched: object): T[] {
+    if (nameToBeMatched && Object.keys(nameToBeMatched).length) {
+      const [key, name] = Object.entries(nameToBeMatched)[0];
+      return bancosJSON.filter((banco) =>
+        this.compareStrings(String(banco[key as keyof T]), name),
+      )
+    }
+    else {
+      return bancosJSON;
+    }
   }
+
+  private compareStrings(str1: string, str2: string): boolean {
+    const normalizedStr1 = this.normalizeString(str1);
+    const normalizedStr2 = this.normalizeString(str2);
+    return normalizedStr1.includes(normalizedStr2);
+  }
+
+  private normalizeString(str: string): string {
+    return this.normalizeBR(str)
+      .replace(/[.,\-\/]/g, "")
+      .trim();
+  }
+
+  private normalizeBR = (str: string) => str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
 }
