@@ -10,7 +10,7 @@ export class AuthController {
   ) { }
 
   @Post('session')
-  async login(@Body() body, @Res() response, @Req() req) {
+  async session(@Body() body, @Res() response, @Req() req) {
     const idToken = body?.idToken?.toString();
     const csrfToken = body?.csrfToken?.toString();
 

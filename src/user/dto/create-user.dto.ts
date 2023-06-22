@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, Length, IsUrl, IsOptional} from "class-validator";
+import { IsEmail, IsNotEmpty, Length, IsUrl, IsOptional, IsDate} from "class-validator";
 
 export class CreateUserDto {
     @IsEmail()
@@ -13,4 +13,11 @@ export class CreateUserDto {
     @IsOptional()
     @IsUrl()
     url_perfil: string;
+
+    @IsOptional()
+    @IsUrl()
+    idToken: string;
+
+    @IsDate()
+    createDate: Date;
 }

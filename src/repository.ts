@@ -61,14 +61,17 @@ export class UserRepository {
       displayName: user.name,
       password: user.password,
       photoURL: user.url_perfil
-    });
+    })
+    console.log("userRecord:UserRecord ->",userRecord);
     try {
       const userCreated: IUser = {
         id: userRecord.uid,
         email: userRecord.email,
         name: userRecord.displayName,
         password: userRecord.passwordHash ?? null,
-        url_perfil: userRecord.photoURL ?? null
+        url_perfil: userRecord.photoURL ?? null,
+        phoneNumber: userRecord.phoneNumber ?? null,
+        createDate: new Date()
       };
       console.log("userCreated:IUser ->",userCreated);
 
@@ -87,7 +90,14 @@ export class UserRepository {
   }
 
   public async deleteUser(userId: string): Promise<void> {
-    await this._collectionRef.doc(userId).delete();
+    try{
+      await this._collectionRef.doc(userId).delete({
+        exists:true
+      });
+    }
+    catch(error){
+      throw error;
+    }
   }
 
   public async sessionLogin(idToken: string, expiresIn:number) {
