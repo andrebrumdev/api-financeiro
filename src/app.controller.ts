@@ -6,7 +6,7 @@ import { AuthGuard } from '@nestjs/passport';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @UseGuards(AuthGuard('firebase-auth'))
+  // @UseGuards(AuthGuard('firebase-aut h'))
   @Get('/hello')
   getHello(@Req() resquest: Request){
     return 'JWT => '+ JSON.stringify(resquest['user'] + ' ;')
