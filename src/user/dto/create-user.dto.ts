@@ -12,7 +12,7 @@ export class ICreateUserDTO extends PartialType(User) {
     email: string;
 
     @IsNotEmpty({ message: 'Senha não pode ser vazia' })
-    @Length(minLengthPassword, maxLengthPassword, { message: 'Senha precisa ter entre 5 e 10 caracteres' })
+    @Length(minLengthPassword, maxLengthPassword, { message: `Senha precisa ter entre ${minLengthPassword} e ${maxLengthPassword} caracteres` })
     password: string;
 
     name: string;
@@ -24,5 +24,6 @@ export class ICreateUserDTO extends PartialType(User) {
     @IsOptional()
     puid: string;
 
+    @IsOptional()
     uid: string;
 }

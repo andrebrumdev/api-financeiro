@@ -9,10 +9,10 @@ export class User {
 
     puid: string;
 
-    name: string;
+    name!: string;
 
     @IsEmail()
-    email: string;
+    email!: string;
 
     @IsEmail()
     @IsOptional()
@@ -20,10 +20,9 @@ export class User {
     
     @IsNotEmpty({ message: 'Senha não pode ser vazia' })
     @Length(5, 16, { message: 'Senha precisa ter entre 5 e 10 caracteres' })
-    password: string;
+    password!: string;
 
     @IsOptional()
     @IsPhoneNumber('BR')
     phoneNumber?: string;
-
 }
