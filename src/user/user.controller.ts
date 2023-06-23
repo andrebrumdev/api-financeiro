@@ -9,7 +9,8 @@ export class UserController {
 
   @Post()
   async create(@Body() createUserDto: ICreateUserDTO, @Res() res) {
-    const user = await this.userService.execute(createUserDto);
+    const userExecuted = await this.userService.execute(createUserDto);
+    const user = await this.userService.create(userExecuted);
     res.status(200).send(user);
   }
 

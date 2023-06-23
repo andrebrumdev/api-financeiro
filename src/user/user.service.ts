@@ -46,7 +46,7 @@ export class UserService {
     return await this.userRepository.delete(id);
   } 
 
-  public async execute(user: ICreateUserDTO): Promise<void> {
-    await this.userRepository.exec(user)
+  public async execute(user: ICreateUserDTO): Promise<User> {
+    return await this.userRepository.exec(user)
   }
 }
