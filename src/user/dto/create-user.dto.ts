@@ -17,7 +17,4 @@ export class CreateUserDto {
     @IsOptional()
     @IsUrl()
     idToken: string;
-
-    @IsDate()
-    createDate: Date;
 }

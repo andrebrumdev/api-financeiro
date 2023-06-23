@@ -8,19 +8,19 @@ import { UserRepository } from 'src/repository';
 export class UserService {
   private userRespository : UserRepository = new UserRepository();
   
-  create(createUserDto: CreateUserDto) {
-    return this.userRespository.createUser(createUserDto);
+  async create(createUserDto: CreateUserDto) {
+    return await this.userRespository.createUser(createUserDto);
   }
 
-  findOne(id: string) {
-    return this.userRespository.getUser(id);
+  async findOne(id: string) {
+    return await this.userRespository.getUser(id);
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return this.userRespository.updateUser(id,updateUserDto);
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    return await this.userRespository.updateUser(id,updateUserDto);
   }
 
-  remove(id: string) {
-    return this.userRespository.deleteUser(id);
+  async remove(id: string) {
+    return await this.userRespository.deleteUser(id);
   }
 }

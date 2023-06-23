@@ -8,15 +8,20 @@ export class AuthService {
   
   public async login(loginDto: LoginDto): Promise<any> {
     try {
+      console.log(loginDto);
       const userRecord = await this.userRepository.getUser(
         loginDto.email
       );
-
+      if(userRecord){
+        return { user: userRecord };
+      }
+      else{
+        return null;
+      }
       // Autenticação bem-sucedida, retorne os detalhes do usuário ou um token JWT, se necessário
-      return { user: userRecord };
     } catch (error) {
       // Lide com o erro de autenticação
-      throw error;
+      throw error.message;
     }
   }
 

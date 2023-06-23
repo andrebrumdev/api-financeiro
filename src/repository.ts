@@ -47,8 +47,24 @@ export class Repository<T> {
 export class UserRepository {
   private _collectionRef: FirebaseFirestore.CollectionReference = firebase.firestore().collection('users');
 
-  public async getUser(userId: string): Promise<IUser | null> {
-    const userSnapshot = await this._collectionRef.doc(userId).get();
+  private fireBaseToUser(userRecord:any): IUser{
+    return {
+      id: userRecord.uid,
+      email: userRecord.email,
+      name: userRecord.displayName,
+      password: userRecord.passwordHash ?? null,
+      url_perfil: userRecord.photoURL ?? null,
+      phoneNumber: userRecord.phoneNumber ?? null
+    };
+  }
+
+  public async getUser(user: any): Promise<IUser | null> {
+    if(user.email){
+      const userSnapshot = firebase.auth().getUsers(user);
+      console.log(userSnapshot);
+      return this.fireBaseToUser(userSnapshot);
+    }
+    const userSnapshot = await this._collectionRef.doc(user).get();
     if (userSnapshot.exists) {
       return userSnapshot.data() as IUser;
     }
@@ -56,59 +72,74 @@ export class UserRepository {
   }
 
   public async createUser(user: CreateUserDto): Promise<string> {
-    const userRecord = await firebase.auth().createUser({
-      email: user.email,
-      displayName: user.name,
-      password: user.password,
-      photoURL: user.url_perfil
-    })
-    console.log("userRecord:UserRecord ->",userRecord);
     try {
-      const userCreated: IUser = {
-        id: userRecord.uid,
-        email: userRecord.email,
-        name: userRecord.displayName,
-        password: userRecord.passwordHash ?? null,
-        url_perfil: userRecord.photoURL ?? null,
-        phoneNumber: userRecord.phoneNumber ?? null,
-        createDate: new Date()
-      };
-      console.log("userCreated:IUser ->",userCreated);
+      const userRecord = await firebase.auth().createUser({
+        email: user.email,
+        displayName: user.name,
+        password: user.password,
+        photoURL: user.url_perfil
+      })
+      try {
+        const userCreated: IUser = {
+          ...this.fireBaseToUser(userRecord),
+          createDate: new Date()
+        };
 
-      await this._collectionRef.doc(userRecord.uid).set(userCreated);
-
-      return userRecord.uid;
+        await this._collectionRef.doc(userRecord.uid).set(userCreated);
+        console.log("userRecord =>",userRecord);
+        
+        return userRecord.uid;
+      }
+      catch (error) {
+        await firebase.auth().deleteUser(userRecord.uid);
+        throw error.message;
+      }
     }
     catch (error) {
-      await firebase.auth().deleteUser(userRecord.uid);
-      throw error;
+      throw error.message;
     }
+
   }
 
   public async updateUser(userId: string, updatedUser: UpdateUserDto): Promise<void> {
-    await this._collectionRef.doc(userId).set(updatedUser, { merge: true });
+    try {
+      await Promise.all([
+        firebase.auth().updateUser(userId, updatedUser),
+        this._collectionRef.doc(userId).set(updatedUser, { merge: true })
+      ]).catch(e=>{
+        throw e;
+      })
+    }
+    catch (error) {
+      console.log(error.message);
+    }
   }
 
   public async deleteUser(userId: string): Promise<void> {
-    try{
-      await this._collectionRef.doc(userId).delete({
-        exists:true
+    try {
+      console.log(`--------deleteUser:${userId}--------`);
+      const pro = await Promise.all([
+        firebase.auth().deleteUser(userId),
+        this._collectionRef.doc(userId).delete({ exists: true })
+      ]).catch(e=>{
+        throw e;
       });
+      console.log(pro);
     }
-    catch(error){
-      throw error;
+    catch (error) {
+      console.log(error.message);
     }
   }
 
-  public async sessionLogin(idToken: string, expiresIn:number) {
+  public async sessionLogin(idToken: string, expiresIn: number) {
     try {
-      const sessionCookie = await firebase.auth().createSessionCookie(idToken,{expiresIn});
-      
+      const sessionCookie = await firebase.auth().createSessionCookie(idToken, { expiresIn });
+
       // Verificar o cookie de sessão
       return sessionCookie;
     } catch (error) {
       // Lide com o erro de autenticação
-      throw error;
+      throw error.message;
     }
   }
 

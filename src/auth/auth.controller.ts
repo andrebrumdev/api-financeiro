@@ -33,4 +33,24 @@ export class AuthController {
       response.status(401).send('UNAUTHORIZED REQUEST!');
     }
   }
+
+  @Post('login')
+  async login(@Body() body, @Res() response) {
+    try {
+      const data = await this.authService.login(body);
+      if(data)
+      response.status(200).send(JSON.stringify({
+        status: 'success',
+        code: 200,
+        data
+      }));
+      else{
+        response.status(400).send("USER NOT FOUND!")
+      }
+    }
+    catch (e) {
+      console.log(e.message);
+      response.status(401).send('UNAUTHORIZED REQUEST!');
+    }
+  }
 }

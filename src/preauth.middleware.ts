@@ -16,7 +16,7 @@ export class PreauthMiddleware implements NestMiddleware {
         next();
       })
       .catch(error =>{
-        console.error(error);
+        console.log(error.message);
         this.acessDenied(req.url, res);
       })
     }

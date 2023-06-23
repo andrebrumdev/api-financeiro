@@ -6,5 +6,5 @@ export class IUser {
     url_perfil: string;
     password: string;
     phoneNumber: string;
-    createDate: Date;
+    createDate?: Date;
 }
