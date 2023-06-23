@@ -1,9 +1,15 @@
-import * as firebase from 'firebase-admin';
+import * as admin from 'firebase-admin';
+import * as fireorm from 'fireorm';
 
 export function initializeFirebase() {
     var serviceAccount = JSON.parse(process.env.FIREBASE);
-    firebase.initializeApp({
-        credential: firebase.credential.cert(serviceAccount),
-        databaseURL: "https://financaspessoal-4aaf9-default-rtdb.firebaseio.com/"
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        databaseURL: `https://${serviceAccount.project_id}.firebaseio.com/`
     });
+    const firestore = admin.firestore();
+    firestore.settings({
+        timestampsInSnapshots: true,
+      });
+    fireorm.initialize(firestore);
 }

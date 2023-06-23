@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/repository';
 import { LoginDto } from './dto/login.dto';
+import { getRepository } from 'fireorm';
+import { User } from 'src/user/entities/users.entity';
 
 @Injectable()
 export class AuthService {
-  private readonly userRepository: UserRepository = new UserRepository();
+  private userRepository = getRepository(User);
   
   public async login(loginDto: LoginDto): Promise<any> {
     try {
       console.log(loginDto);
-      const userRecord = await this.userRepository.getUser(
-        loginDto.email
-      );
+      const userRecord = this.userRepository.whereEqualTo("email",loginDto.email);
       if(userRecord){
         return { user: userRecord };
       }
@@ -23,10 +22,6 @@ export class AuthService {
       // Lide com o erro de autenticação
       throw error.message;
     }
-  }
-
-  public async sessionLogin(idToken: any,expiresIn:number){
-    return await this.userRepository.sessionLogin(idToken,expiresIn);
   }
   
 }

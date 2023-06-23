@@ -30,6 +30,7 @@
     "class-validator": "^0.14.0",
     "dotenv": "^16.3.1",
     "firebase-admin": "^11.9.0",
+    "fireorm": "^0.23.3",
     "passport": "^0.6.0",
     "passport-firebase-jwt": "^1.2.1",
     "passport-jwt": "^4.0.1",

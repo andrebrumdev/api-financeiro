@@ -1,6 +1,10 @@
-import { IsEmail, IsNotEmpty, Length, IsUrl, IsOptional, IsDate} from "class-validator";
+import { PartialType } from "@nestjs/mapped-types";
+import { IsEmail, IsNotEmpty, Length, IsUrl, IsOptional } from "class-validator";
+import { User } from "../entities/users.entity";
 
-export class CreateUserDto {
+export class ICreateUserDTO extends PartialType(User) {
+    id?: string
+
     @IsEmail()
     email: string;
 
@@ -9,12 +13,13 @@ export class CreateUserDto {
     password: string;
 
     name: string;
-    
+
     @IsOptional()
     @IsUrl()
     url_perfil: string;
 
     @IsOptional()
-    @IsUrl()
-    idToken: string;
+    puid: string;
+
+    uid: string;
 }
