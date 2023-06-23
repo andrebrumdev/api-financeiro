@@ -4,13 +4,12 @@ import { getRepository } from 'fireorm';
 import { User } from 'src/user/entities/users.entity';
 import { ICreateUserDTO } from './dto/create-user.dto';
 import Paginations from 'src/models/paginations.interface';
-import * as bcrypt from 'bcrypt';
+import UserRepository from './entities/userRepository.reposity';
 
-const saltRounds = 10;
 
 @Injectable()
 export class UserService {
-  private userRepository = getRepository(User);
+  private userRepository:UserRepository = getRepository(User) as UserRepository;
 
   public async create(user: User) {
     return await this.userRepository.create(user);
@@ -54,19 +53,7 @@ export class UserService {
   }
 
   public execute(userCreate: ICreateUserDTO | UpdateUserDto): User {
-    const user = new User;
-    Object.entries(userCreate).forEach(([key, value]) => {
-      if(key === "password"){
-        bcrypt.genSalt(saltRounds, function(err, salt) {
-          bcrypt.hash(value, salt, function(err, hash) {
-            user[key] = hash;
-          });
-        });
-      }
-      else if (value) {
-        user[key] = value;
-      }
-    });
+    const user = this.userRepository.exec(userCreate);
     return user
   }
 }
