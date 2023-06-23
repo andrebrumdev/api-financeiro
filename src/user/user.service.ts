@@ -13,15 +13,15 @@ export class UserService {
     this.userRepository = getRepository(User) as UserRepository
   }
 
-  async create(user: User) {
+  public async create(user: User) {
     return await this.userRepository.create(user);
   }
 
-  async findOne(id: string) {
+  public async findOne(id: string) {
     return await this.userRepository.findById(id);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  public async update(id: string, updateUser: User) {
     try {
       const user = await this.userRepository.findById(id);
 
@@ -29,24 +29,21 @@ export class UserService {
         throw new Error('User not found');
       }
 
-      Object.entries(updateUserDto).forEach(([key, value]) => {
-        if (value && user[key]) {
-          user[key] = value;
-        }
-      });
+      const mergeUser = {id,...updateUser,...user} as User;
 
-      await this.userRepository.update(user);
+      await this.userRepository.update(mergeUser);
+      
       return user;
     } catch (error) {
       throw new Error('Failed to update user');
     }
   }
 
-  async remove(id: string) {
+  public async remove(id: string) {
     return await this.userRepository.delete(id);
   } 
 
-  public async execute(user: ICreateUserDTO): Promise<User> {
-    return await this.userRepository.exec(user)
+  public execute(user: ICreateUserDTO | UpdateUserDto): User {
+    return this.userRepository.exec(user)
   }
 }

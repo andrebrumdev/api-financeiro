@@ -9,7 +9,7 @@ export class UserController {
 
   @Post()
   async create(@Body() createUserDto: ICreateUserDTO, @Res() res) {
-    const userExecuted = await this.userService.execute(createUserDto);
+    const userExecuted = this.userService.execute(createUserDto);
     const user = await this.userService.create(userExecuted);
     res.status(200).send(user);
   }
@@ -21,7 +21,8 @@ export class UserController {
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Res() res) {
-    const user = await this.userService.update(id, updateUserDto);
+    const userExecuted = this.userService.execute(updateUserDto);
+    const user = await this.userService.update(id, userExecuted);
     res.status(200).json(user);
   }
 
